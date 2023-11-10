@@ -1,0 +1,45 @@
+.tile {
+    width: 65px;
+    height: 65px;
+    position: relative;
+    border-radius: 5px;
+    border: transparent;
+    background: #efe2b3;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.tile-bg {
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+}
+
+.tile.mountain .tile-bg {
+    background: #ae7744;
+}
+
+.tile.forest .tile-bg {
+    background: #3b8e3e;
+}
+
+.tile.water .tile-bg {
+    background: #4d8eb3;
+}
+
+.tile.village .tile-bg {
+    background: #ea8f8f;
+}
+
+.tile.road .tile-bg {
+    background: #d9d9d9;
+}
+
+.tile.hovered {
+    border: 2px solid #ffa800;
+}
+
+.tile.preview .tile-bg {
+    opacity: 0.5;
+}
+
