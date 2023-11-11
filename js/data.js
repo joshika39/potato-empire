@@ -36,7 +36,7 @@ export const data = {
         },
         {
             "title": "Öntözőcsatorna",
-            "description": "Minden olyan oszlopodért, amelyben a farm illetve a vízmezők száma megegyezik, négy-négy pontot kapsz. Mindkét tereptípusból legalább egy-egy mezőnek lennie kell az oszlopban ahhoz, hogy pontot kaphass érte."
+            "description": "Minden olyan oszlopodért, amelyben a wheat illetve a vízmezők száma megegyezik, négy-négy pontot kapsz. Mindkét tereptípusból legalább egy-egy mezőnek lennie kell az oszlopban ahhoz, hogy pontot kaphass érte."
         },
         {
             "title": "Mágusok völgye",
@@ -61,6 +61,22 @@ export const data = {
     ],
 }
 
+export const Seasons = {
+    Summer: Symbol("summer"),
+    Autumn: Symbol("autumn"),
+    Winter: Symbol("winter"),
+    Spring: Symbol("spring")
+}
+
+export const TileTypes = {
+    Village: Symbol("village"),
+    Forest: Symbol("forest"),
+    Wheat: Symbol("wheat"),
+    Mountain: Symbol("mountain"),
+    Lake: Symbol("water"),
+    Plain: Symbol("plain"),
+}
+
 export const elements = [
     {
         time: 2,
@@ -73,7 +89,7 @@ export const elements = [
     },
     {
         time: 2,
-        type: 'town',
+        type: 'village',
         shape: [[1, 1, 1],
             [0, 0, 0],
             [0, 0, 0]],
@@ -91,7 +107,7 @@ export const elements = [
     },
     {
         time: 2,
-        type: 'farm',
+        type: 'wheat',
         shape: [[1, 1, 1],
             [0, 0, 1],
             [0, 0, 0]],
@@ -109,7 +125,7 @@ export const elements = [
     },
     {
         time: 2,
-        type: 'town',
+        type: 'village',
         shape: [[1, 1, 1],
             [0, 1, 0],
             [0, 0, 0]],
@@ -118,7 +134,7 @@ export const elements = [
     },
     {
         time: 2,
-        type: 'farm',
+        type: 'wheat',
         shape: [[1, 1, 1],
             [0, 1, 0],
             [0, 0, 0]],
@@ -127,7 +143,7 @@ export const elements = [
     },
     {
         time: 1,
-        type: 'town',
+        type: 'village',
         shape: [[1, 1, 0],
             [1, 0, 0],
             [0, 0, 0]],
@@ -136,7 +152,7 @@ export const elements = [
     },
     {
         time: 1,
-        type: 'town',
+        type: 'village',
         shape: [[1, 1, 1],
             [1, 1, 0],
             [0, 0, 0]],
@@ -145,7 +161,7 @@ export const elements = [
     },
     {
         time: 1,
-        type: 'farm',
+        type: 'wheat',
         shape: [[1, 1, 0],
             [0, 1, 1],
             [0, 0, 0]],
@@ -154,7 +170,7 @@ export const elements = [
     },
     {
         time: 1,
-        type: 'farm',
+        type: 'wheat',
         shape: [[0, 1, 0],
             [1, 1, 1],
             [0, 1, 0]],

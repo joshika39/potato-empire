@@ -27,6 +27,10 @@
     background: #4d8eb3;
 }
 
+.tile.wheat .tile-bg {
+    background: #e6e600;
+}
+
 .tile.village .tile-bg {
     background: #ea8f8f;
 }
