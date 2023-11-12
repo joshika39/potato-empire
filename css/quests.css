@@ -1,0 +1,32 @@
+#quests {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.quest {
+    width: 35rem;
+    background: #363636;
+    border-radius: 15px;
+    padding: .5rem;
+    color: #ffffff;
+    display: flex;
+    flex-direction: row;
+    margin: .5rem;
+}
+
+.quest-image img {
+    width: 5rem;
+    height: 5rem;
+    background: #ffffff;
+    margin-right: 1rem;
+}
+
+.point-holder {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 1rem;
+}
+

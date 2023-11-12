@@ -1,46 +1,76 @@
 .tile {
-    width: 65px;
-    height: 65px;
+    width: 55px;
+    height: 55px;
     position: relative;
     border-radius: 5px;
     border: transparent;
-    background: #efe2b3;
+    background: #ffffff;
     z-index: 0;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .tile-bg {
     z-index: -1;
-    width: 100%;
-    height: 100%;
+    padding: 1.5rem;
 }
 
-.tile.mountain .tile-bg {
+.tile.plain {
+    background: rgb(255, 246, 200);
+}
+
+.tile.mountain {
     background: #ae7744;
 }
 
+.tile.forest {
+    background: #2d862d;
+}
+
 .tile.forest .tile-bg {
-    background: #3b8e3e;
+    background: url("../images/icons/tree.svg") no-repeat center;
+}
+
+.tile.water {
+    background: #59d2ec;
 }
 
 .tile.water .tile-bg {
-    background: #4d8eb3;
+    background: url("../images/icons/wave.svg") no-repeat center;
 }
 
-.tile.wheat .tile-bg {
+.tile.farm {
     background: #e6e600;
 }
 
-.tile.village .tile-bg {
-    background: #ea8f8f;
+.tile.farm .tile-bg {
+    background: url("../images/icons/farm.svg") no-repeat center;
 }
 
-.tile.road .tile-bg {
+.tile.village {
+    background: #b13030;
+}
+
+.tile.village .tile-bg {
+    background: url("../images/icons/house.svg") no-repeat center;
+}
+
+.tile.road {
     background: #d9d9d9;
 }
 
-.tile.hovered {
-    border: 2px solid #ffa800;
+/*.tile.hovered {*/
+/*    border: 4px solid #ffa800;*/
+/*}*/
+
+.tile.correct {
+    border: 4px solid #1cc201;
+}
+
+.tile.incorrect {
+    border: 4px solid #ff0000;
 }
 
 .tile.preview .tile-bg {

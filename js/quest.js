@@ -1,0 +1,75 @@
+import {seasons} from "./data.js";
+
+export class Quest {
+    isActive = false;
+    points = 0;
+
+    constructor(questData, code) {
+        this.id = questData.id;
+        this.title = questData.title;
+        this.description = questData.description;
+        this.code = code;
+        this.validator = questData.validator;
+
+        this.container = document.getElementById("quests");
+        this.content = document.createElement("div");
+        this.content.classList.add("quest");
+
+        let questImage = document.createElement("div");
+        questImage.classList.add("quest-image");
+        let image = document.createElement("img");
+        image.src = `./images/quests/${questData.id}.png`;
+        questImage.append(image);
+
+        let questDescription = document.createElement("div");
+        questDescription.classList.add("quest-description");
+
+        let title = document.createElement("h3");
+        title.innerHTML = this.title;
+        let description = document.createElement("p");
+        description.innerHTML = this.description;
+        this.letter = document.createElement("p");
+        questDescription.append(title);
+        questDescription.append(description);
+        let pointHolder = document.createElement("div");
+        pointHolder.classList.add("point-holder");
+        this.pointsContent = document.createElement("p");
+        this.pointsContent.innerHTML = `(${this.points} pont)`;
+        pointHolder.append(this.pointsContent);
+        pointHolder.append(this.letter)
+        questDescription.append(pointHolder);
+
+        this.content.append(questImage);
+        this.content.append(questDescription);
+
+        this.container.append(this.content);
+    }
+
+    validateQuest(currentSeason) {
+        switch (currentSeason) {
+            case 0:
+                this.isActive = this.code === "A" || this.code === "B";
+                break;
+            case 1:
+                this.isActive = this.code === "B" || this.code === "C";
+                break;
+            case 2:
+                this.isActive = this.code === "C" || this.code === "D";
+                break;
+            case 3:
+                this.isActive = this.code === "D" || this.code === "A";
+                break;
+        }
+
+        this.letter.innerHTML = this.isActive ? `🟢 ${this.code}` : this.code;
+    }
+
+    validatePoints(currentSeason, tiles) {
+        if(this.isActive){
+            this.points = this.validator(tiles);
+            this.pointsContent.innerHTML = `(${this.points} pont)`;
+            let season = seasons[currentSeason];
+            season.setPoints(season.points + this.points);
+        }
+    }
+}

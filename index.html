@@ -5,25 +5,33 @@
     <title>A térképész</title>
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/tiles.css">
+    <link rel="stylesheet" type="text/css" href="css/quests.css">
+    <link rel="icon" href="images/favico.png" type="image/x-icon"/>
 </head>
 <body>
 <div class="container">
     <div class="map-wrapper">
-        <div id="map"></div>
+        <div id="map-parent">
+            <div id="map" class="map"></div>
+            <img id="logo" alt="Icon of the product" src="images/logo-xxl.png">
+        </div>
         <div id="details">
-            <div id="seasons">
+            <div id="seasons-wrapper">
+                <div id="seasons" class="holder"></div>
                 <div class="holder">
-                    <div id="spring" class="point-tile">Tavasz:<br>3 pont</div>
-                    <div id="summer" class="point-tile">Nyár:<br>0 pont</div>
-                    <div id="autumn" class="point-tile">Ősz:<br>0 pont</div>
-                    <div id="winter" class="point-tile">Tél:<br>0 pont</div>
-                </div>
-                <div class="holder">
-                    <h4>összesen: x</h4>
+                    <h4 id="sum"></h4>
                 </div>
             </div>
-            <h4>Jelenlegi évszak:</h4>
+            <h4 id="current-season">Jelenlegi évszak:</h4>
             <hr>
+            <div id="quests"></div>
+            <h4 id="timer">Évszakból hátralévő idő</h4>
+            <hr>
+            <div id="tile-picker">
+                <div id="preview-map" class="map"></div>
+                <button id="rotate">Forgatás</button>
+                <button id="mirror">Tükrözés</button>
+            </div>
         </div>
     </div>
 </div>
