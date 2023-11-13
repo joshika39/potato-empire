@@ -294,7 +294,7 @@ export class InteractiveMap extends Map {
         let sumPoints = quests.filter(q => q.isActive).map(q => q.points).reduce((a, b) => a + b, 0);
         sumPoints += hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0);
         getCurrentSeason().setPoints(sumPoints);
-        
+
         sum.innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0)}`;
         hiddenSum.innerText = `Rejtett küldetések: ${hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0)}`;
     }
