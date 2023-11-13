@@ -13,6 +13,9 @@ import {
 } from "./validators.js";
 
 import structures from './structures.json' assert { type: 'json' };
+import {shuffledElements, updateElement} from "./main.js";
+
+export let stripEnabled = localStorage.stripEnabled === "true" || false;
 
 export const TileTypes = {
     Village: "village",
@@ -25,6 +28,8 @@ export const TileTypes = {
 
 export const sum = document.createElement("h4");
 export const hiddenSum = document.createElement("h4");
+export const requiredTime = document.createElement("h4");
+
 
 export function setup() {
     let details = document.getElementById("details");
@@ -56,9 +61,16 @@ export function setup() {
     details.append(document.createElement("hr"));
     let tilePicker = document.createElement("div");
     tilePicker.id = "tile-picker";
+    requiredTime.id = "required-time";
+    requiredTime.innerHTML = "⏱️";
+    tilePicker.append(requiredTime);
     let previewMap = document.createElement("div");
     previewMap.id = "preview-map";
     previewMap.classList.add("map");
+
+    let previewMapParent = document.createElement("div");
+    previewMapParent.id = "preview-map-parent";
+    previewMapParent.append(previewMap);
     tilePicker.append(previewMap);
     let rotate = document.createElement("button");
     rotate.id = "rotate";
@@ -69,6 +81,21 @@ export function setup() {
     mirror.innerHTML = "Tükrözés";
     tilePicker.append(mirror);
     details.append(tilePicker);
+    let stripToggle = document.createElement("button");
+    stripToggle.id = "strip-toggle";
+    stripToggle.innerHTML = stripEnabled ? "Üres mezők kikapcsolása" : "Üres mezők bekapcsolása";
+    stripToggle.addEventListener("click", (e) => {
+        if(shuffledElements.length === 0) {
+            return;
+        }
+
+        e.target.innerText = stripEnabled ? "Üres mezők kikapcsolása" : "Üres mezők bekapcsolása";
+        stripEnabled = !stripEnabled;
+        localStorage.stripEnabled = stripEnabled;
+        updateElement();
+    })
+    stripToggle.title = "EXPERIMENTAL: Ha ki van kapcsolva, akkor a kiválasztott elemnél le lesz vágva a teljesen üres sor és/vagy oszlop."
+    tilePicker.append(stripToggle);
 }
 
 setup();
@@ -288,21 +315,31 @@ class Element {
         return mirroredMatrix;
     }
 
-    getShape() {
+    getShape(strip = false) {
         let shape = this.shape;
         if (this.mirrored) {
             shape = this.mirror(shape);
         }
         shape = this.rotate(shape);
-        let strippedShape = shape;
+        let finalShape = strip ? this.strippedStructure(shape) : shape;
 
-        this.rows = strippedShape.length;
-        this.cols = strippedShape[0].length;
+        this.rows = finalShape.length;
+        this.cols = finalShape[0].length;
 
         this.rowOffset = Math.floor((this.rows - 1) / 2);
         this.colOffset = Math.floor((this.cols - 1) / 2);
 
-        return strippedShape;
+        return finalShape;
+    }
+
+    serializeJSON() {
+        return {
+            rotation: this.rotation,
+            shape: this.shape,
+            type: this.tileType,
+            time: this.time,
+            mirrored: this.mirrored
+        }
     }
 }
 

@@ -276,7 +276,9 @@ export function validateGazdagVidek(tiles, quest) {
     for (let i = 0; i < tiles.length; i++) {
         tileTypes.clear();
         for (let j = 0; j < tiles[i].length; j++) {
-            tileTypes.add(tiles[i][j].type);
+            if (tiles[i][j].type !== TileTypes.Plain) {
+                tileTypes.add(tiles[i][j].type);
+            }
         }
         if (tileTypes.size >= 5) {
             quest.points += 4;

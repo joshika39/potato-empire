@@ -5,7 +5,7 @@
 }
 
 .quest {
-    width: 25rem;
+    width: 22rem;
     background: #363636;
     border-radius: 15px;
     padding: .5rem;
@@ -13,7 +13,7 @@
     display: flex;
     flex-direction: row;
     margin: .5rem;
-    font-size: .85em;
+    font-size: .8em;
 }
 
 .quest-image img {
@@ -29,5 +29,32 @@
     justify-content: space-between;
     align-items: center;
     margin-right: 1rem;
+}
+
+@media only screen and (max-width: 1380px) {
+    .quest {
+        width: 20rem;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .quest {
+        width: 25rem;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .quest {
+        width: 15rem;
+    }
+}
+
+@media only screen and (max-width: 340px) {
+    .quest {
+        width: 10rem;
+        flex-direction: column;
+        margin: .5rem;
+        font-size: .9em;
+    }
 }
 

@@ -66,10 +66,6 @@
     background: #d9d9d9;
 }
 
-/*.tile.hovered {*/
-/*    border: 4px solid #ffa800;*/
-/*}*/
-
 .tile.correct {
     border: 4px solid #1cc201;
 }
@@ -80,5 +76,49 @@
 
 .tile.preview .tile-bg {
     opacity: 0.5;
+}
+
+#required-time {
+    background: rgb(255, 246, 200);
+    align-self: center;
+    padding: .3rem;
+    border-radius: 5px;
+    text-align: center;
+    line-height: normal;
+}
+
+@media only screen and (max-width: 768px) {
+    .tile {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .tile {
+        width: 22px;
+        height: 22px;
+    }
+
+    .tile.correct {
+        border: 2px solid #1cc201;
+    }
+
+    .tile.incorrect {
+        border: 2px solid #ff0000;
+    }
+
+    .tile-bg {
+        z-index: -1;
+        padding: .5rem;
+        margin: .5rem;
+    }
+}
+
+@media only screen and (max-width: 260px) {
+    .tile {
+        width: 17px;
+        height: 17px;
+    }
 }
 

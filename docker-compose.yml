@@ -1,0 +1,9 @@
+version: "3"
+
+name: potato-empire
+
+services:
+  website:
+    image: potato-empire:latest
+    ports:
+      - '8881:80'

@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    font-size: 16px;
+    font-size: .9em;
     line-height: 1.5;
     color: #2f2f2f;
     height: 100vh;
@@ -41,7 +41,6 @@ a {
 
 .container {
     padding: 1rem;
-    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -115,16 +114,89 @@ a {
 }
 
 #summer {
-    background: #f9d56e;
-    border: 3px solid #ffcc00;
+    background: #ffe45c;
+    border: 3px solid #ddbb08;
 }
 
 #winter {
-    background: #b3d9ff;
+    background: #8cc0f3;
     border: 3px solid #0099ff;
 }
 
 #autumn {
-    background: #ffcc99;
-    border: 3px solid #ff9933;
+    background: #eabd94;
+    border: 3px solid #5f2c00;
+}
+
+#sum {
+    text-align: center;
+}
+
+#hidden-sum {
+    text-align: center;
+    font-weight: lighter;
+}
+
+button {
+    width: 6rem;
+    height: 3rem;
+    align-self: center;
+    margin: .2rem;
+}
+
+#main-map-holder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@media only screen and (max-width: 1380px) {
+    body {
+        font-size: .9em;
+        /*height: 100%;*/
+        Width: 100%;
+    }
+}
+
+@media only screen and (max-width: 1250px) {
+    body {
+        font-size: .9em;
+        height: 100%;
+    }
+}
+
+
+
+@media only screen and (max-width: 1140px) {
+    .map-wrapper {
+        flex-direction: column-reverse;
+    }
+
+    .container {
+        padding: 0;
+    }
+
+    #map-parent {
+        flex-direction: row;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    #tile-picker {
+        flex-wrap: wrap;
+    }
+
+    #seasons {
+        flex-wrap: wrap;
+    }
+
+    .map-wrapper {
+        gap: .5rem;
+        padding: .5rem;
+    }
+
+    .map {
+        padding: .5rem;
+    }
 }

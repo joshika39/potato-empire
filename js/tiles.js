@@ -1,4 +1,4 @@
-import {mountainsCoordinates, seasons, TileTypes, sum, hiddenSum} from "./data.js";
+import {mountainsCoordinates, seasons, TileTypes, sum, hiddenSum, requiredTime, stripEnabled} from "./data.js";
 import {
     currentSeason,
     getCurrentSeason, hiddenQuests,
@@ -6,7 +6,7 @@ import {
     removeElement,
     shuffledElements,
     updateSeason,
-    updateTimer,
+    updateTimer
 } from "./main.js";
 
 class Position {
@@ -101,10 +101,17 @@ export class Tile {
         this.content.classList.remove("incorrect");
         this.content.classList.remove("hovered");
     }
+
+    serializeJSON() {
+        return {
+            type: this.type,
+            position: this.position,
+            isLocked: this.isLocked
+        }
+    }
 }
 
 class Map {
-    currentType = TileTypes.Plain;
     hoveredTile;
     time;
     seasonTime = 7
@@ -113,6 +120,8 @@ class Map {
         if (this.constructor === Map) {
             throw new Error("Abstract classes can't be instantiated.");
         }
+
+        this.id = id;
 
         this.time = 28;
 
@@ -172,8 +181,7 @@ class Map {
             return false;
         }
 
-        let shape = shuffledElements[0].getShape();
-        this.currentType = shuffledElements[0].tileType;
+        let shape = shuffledElements[0].getShape(stripEnabled);
         let rowOffset = shuffledElements[0].rowOffset;
         let colOffset = shuffledElements[0].colOffset;
         let rows = shuffledElements[0].rows;
@@ -195,7 +203,8 @@ class Map {
         }
 
         if (targets.every(t => t.type === "plain")) {
-            targets.forEach(tile => tile.putDown(this.currentType, lockTile))
+            targets.forEach(tile => tile.putDown(shuffledElements[0].tileType, lockTile))
+            localStorage[this.id] = JSON.stringify(this.serializeJSON());
             return true;
         }
 
@@ -216,6 +225,12 @@ class Map {
             }
         }
     }
+
+    serializeJSON() {
+        return {
+            tiles: this.tiles.map(row => row.map(tile => tile.serializeJSON()))
+        }
+    }
 }
 
 export class PreviewMap extends Map {
@@ -225,6 +240,7 @@ export class PreviewMap extends Map {
 }
 
 export class InteractiveMap extends Map {
+    previousTile;
     constructor(id, rows, columns, previewMap) {
         super(id, rows, columns);
         this.previewMap = previewMap;
@@ -236,6 +252,7 @@ export class InteractiveMap extends Map {
         }
 
         this.previewMap.putDownStructure(new Position(1, 1), false);
+        requiredTime.innerText = `${shuffledElements[0].time} ⏱️`;
     }
 
     onTileHovered(tile) {
@@ -269,6 +286,11 @@ export class InteractiveMap extends Map {
             return;
         }
 
+        if(window.mobileAndTabletCheck() && (this.previousTile === undefined || this.previousTile !== tile)){
+            this.previousTile = tile;
+            return;
+        }
+
         if (!this.putDownStructure(tile.position, false, true)) {
             return;
         }
@@ -278,25 +300,27 @@ export class InteractiveMap extends Map {
         this.time -= shuffledElements[0].time;
         this.seasonTime -= shuffledElements[0].time;
 
+        quests.filter(q => q.isActive).forEach(q => q.validatePoints(currentSeason, this.tiles));
+        hiddenQuests.forEach(q => q.validatePoints(currentSeason, this.tiles));
+        let sumPoints = quests.filter(q => q.isActive).map(q => q.points).reduce((a, b) => a + b, 0);
+        sumPoints += hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0);
+
         if (this.seasonTime <= 0) {
+            getCurrentSeason().setPoints(sumPoints);
+            sum.innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0)}`;
+            hiddenSum.innerText = `Rejtett küldetések: ${hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0)}`;
+
             this.seasonTime = 7 - Math.abs(this.seasonTime);
             getCurrentSeason(true);
             updateSeason();
+
+            quests.forEach(q => q.validateQuest(currentSeason));
         }
 
         updateTimer();
         removeElement();
         this.previewMap.putDownStructure(new Position(1, 1), false);
-
-        quests.forEach(q => q.validateQuest(currentSeason));
-        quests.filter(q => q.isActive).forEach(q => q.validatePoints(currentSeason, this.tiles));
-        hiddenQuests.forEach(q => q.validatePoints(currentSeason, this.tiles));
-        let sumPoints = quests.filter(q => q.isActive).map(q => q.points).reduce((a, b) => a + b, 0);
-        sumPoints += hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0);
-        getCurrentSeason().setPoints(sumPoints);
-
-        sum.innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0)}`;
-        hiddenSum.innerText = `Rejtett küldetések: ${hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0)}`;
+        requiredTime.innerText = `${shuffledElements[0].time} ⏱️`;
     }
 
     clearPreviews() {
@@ -305,5 +329,12 @@ export class InteractiveMap extends Map {
                 tile.previewOff();
             }
         }
+    }
+
+    serializeJSON() {
+        let json = super.serializeJSON();
+        json.time = this.time;
+        json.seasonTime = this.seasonTime;
+        return json;
     }
 }
