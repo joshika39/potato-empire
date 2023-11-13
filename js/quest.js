@@ -1,15 +1,38 @@
-import {seasons} from "./data.js";
-
-export class Quest {
+export class QuestBase {
     isActive = false;
     points = 0;
 
-    constructor(questData, code) {
+    constructor(questData) {
         this.id = questData.id;
+        this.validator = questData.validator;
+    }
+
+    validatePoints(currentSeason, tiles) {
+        if(this.isActive){
+            this.validator(tiles, this);
+        }
+    }
+
+    validateQuest(currentSeason) {
+
+    }
+}
+
+export class HiddenQuest extends QuestBase{
+    constructor(questData) {
+        super(questData);
+        this.isActive = true;
+    }
+}
+
+export class Quest extends QuestBase{
+
+    constructor(questData, code) {
+        super(questData);
+
         this.title = questData.title;
         this.description = questData.description;
         this.code = code;
-        this.validator = questData.validator;
 
         this.container = document.getElementById("quests");
         this.content = document.createElement("div");
@@ -45,7 +68,12 @@ export class Quest {
         this.container.append(this.content);
     }
 
-    validateQuest(currentSeason) {
+    validatePoints(currentSeason, tiles) {
+        super.validatePoints(currentSeason, tiles);
+        this.pointsContent.innerHTML = `(${this.points} pont)`;
+    }
+
+    validateQuest(currentSeason)  {
         switch (currentSeason) {
             case 0:
                 this.isActive = this.code === "A" || this.code === "B";
@@ -62,14 +90,5 @@ export class Quest {
         }
 
         this.letter.innerHTML = this.isActive ? `🟢 ${this.code}` : this.code;
-    }
-
-    validatePoints(currentSeason, tiles) {
-        if(this.isActive){
-            this.points = this.validator(tiles);
-            this.pointsContent.innerHTML = `(${this.points} pont)`;
-            let season = seasons[currentSeason];
-            season.setPoints(season.points + this.points);
-        }
     }
 }

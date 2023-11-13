@@ -1,14 +1,81 @@
-// export const TileTypes = {
-//     Village: Symbol("village"),
-//     Forest: Symbol("forest"),
-//     Farm: Symbol("farm"),
-//     Mountain: Symbol("mountain"),
-//     Water: Symbol("water"),
-//     Plain: Symbol("plain"),
-// }
+import {
+    validateAlmosVolgy,
+    validateErdoSzele,
+    validateFasor,
+    validateGazdagVaros, validateGazdagVidek,
+    validateHatarvidek, validateKorbekeritettHegy,
+    validateKrumpliontozes,
+    validateMagusokVolgye,
+    validateOntozocsatorna,
+    validateParatlanSilok,
+    validateSorhaz,
+    validateUresTelek
+} from "./validators.js";
+
+import structures from './structures.json' assert { type: 'json' };
+
+export const TileTypes = {
+    Village: "village",
+    Forest: "forest",
+    Farm: "farm",
+    Mountain: "mountain",
+    Water: "water",
+    Plain: "plain"
+}
+
+export const sum = document.createElement("h4");
+export const hiddenSum = document.createElement("h4");
+
+export function setup() {
+    let details = document.getElementById("details");
+    let seasonWrapper = document.createElement("div");
+    seasonWrapper.id = "seasons-wrapper";
+    let seasons = document.createElement("div");
+    seasons.id = "seasons";
+    seasons.classList.add("holder");
+    seasonWrapper.append(seasons);
+    seasonWrapper.append(sum);
+    seasonWrapper.append(hiddenSum);
+    details.append(seasonWrapper);
+    sum.id = "sum";
+    sum.innerHTML = "Összesen:";
+    hiddenSum.id = "hidden-sum";
+    hiddenSum.innerHTML = "Rejtett küldetések:";
+    let currentSeason = document.createElement("h4");
+    currentSeason.id = "current-season";
+    currentSeason.innerHTML = "Jelenlegi évszak:";
+    details.append(currentSeason);
+    details.append(document.createElement("hr"));
+    let quests = document.createElement("div");
+    quests.id = "quests";
+    details.append(quests);
+    let timer = document.createElement("h4");
+    timer.id = "timer";
+    timer.innerHTML = "Évszakból hátralévő idő:";
+    details.append(timer);
+    details.append(document.createElement("hr"));
+    let tilePicker = document.createElement("div");
+    tilePicker.id = "tile-picker";
+    let previewMap = document.createElement("div");
+    previewMap.id = "preview-map";
+    previewMap.classList.add("map");
+    tilePicker.append(previewMap);
+    let rotate = document.createElement("button");
+    rotate.id = "rotate";
+    rotate.innerHTML = "Forgatás";
+    tilePicker.append(rotate);
+    let mirror = document.createElement("button");
+    mirror.id = "mirror";
+    mirror.innerHTML = "Tükrözés";
+    tilePicker.append(mirror);
+    details.append(tilePicker);
+}
+
+setup();
 
 export class Season {
     points = 0;
+
     constructor(id, name) {
         this.id = id;
         this.name = name;
@@ -35,7 +102,7 @@ export const seasons = [
     new Season("winter", "Tél")
 ]
 
-export const mountains = [
+export const mountainsCoordinates = [
     [2, 2],
     [4, 9],
     [6, 4],
@@ -49,7 +116,7 @@ export const rawQuests = {
             "id": "erdo-szele",
             "title": "Az erdő széle",
             "description": "A térképed szélével szomszédos erdőmezőidért egy-egy pontot kapsz.",
-            "validator": validateErdoSzele,
+            "validator": validateErdoSzele
         },
         {
             "id": "almos-volgy",
@@ -120,315 +187,14 @@ export const rawQuests = {
             "validator": validateGazdagVidek
         }
     ],
-}
-
-function validateErdoSzele(tiles) {
-    let points = 0;
-
-    for (let i = 1; i < tiles.length; i++) {
-        let tile = tiles[i][0];
-        if (tile.type.description === "forest") {
-            points++;
+    "hidden": [
+        {
+            "id": "korbekeritett-hegy",
+            "title": "Körbekerített hegy mező",
+            "description": "Ha a hegyeket 4 oldalról körbevesszük más mezővel, körbevett hegyenként 1-1 pontot kapunk.",
+            "validator": validateKorbekeritettHegy
         }
-
-        tile = tiles[i][tiles[i].length - 1];
-        if (tile.type.description === "forest") {
-            points++;
-        }
-    }
-
-    for (let i = 0; i < tiles[0].length; i++) {
-        let tile = tiles[0][i];
-        if (tile.type.description === "forest") {
-            points++;
-        }
-
-        tile = tiles[tiles.length - 1][i];
-        if (tile.type.description === "forest") {
-            points++;
-        }
-    }
-
-    return points;
-}
-
-function validateAlmosVolgy(tiles) {
-    let points = 0;
-
-    for (let i = 0; i < tiles.length; i++) {
-        let forestCount = 0;
-        for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === "forest") {
-                forestCount++;
-            }
-        }
-        if (forestCount >= 3) {
-            points += 4;
-        }
-    }
-
-    return points;
-}
-
-function validateKrumpliontozes(tiles) {
-    let points = 0;
-
-    for (let i = 0; i < tiles.length; i++) {
-        for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === "farm") {
-                if (i > 0 && tiles[i - 1][j].type === "water") {
-                    points += 2;
-                }
-                if (i < tiles.length - 1 && tiles[i + 1][j].type === "water") {
-                    points += 2;
-                }
-                if (j > 0 && tiles[i][j - 1].type === "water") {
-                    points += 2;
-                }
-                if (j < tiles[i].length - 1 && tiles[i][j + 1].type === "water") {
-                    points += 2;
-                }
-            }
-        }
-    }
-
-    return points;
-}
-
-function validateHatarvidek(tiles) {
-    let points = 0;
-
-    for (let i = 0; i < tiles.length; i++) {
-        let rowFull = true;
-        let colFull = true;
-        for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === "plain") {
-                rowFull = false;
-            }
-            if (tiles[j][i].type === "plain") {
-                colFull = false;
-            }
-        }
-        if (rowFull) {
-            points += 6;
-        }
-        if (colFull) {
-            points += 6;
-        }
-    }
-
-    return points;
-}
-
-function validateFasor(tiles) {
-    let points = 0;
-
-    let forestCount = 0;
-    let maxForestCount = 0;
-
-    for (let i = 0; i < tiles.length; i++) {
-        forestCount = 0;
-        for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === "forest") {
-                forestCount++;
-            } else {
-                if (forestCount > maxForestCount) {
-                    maxForestCount = forestCount;
-                }
-                forestCount = 0;
-            }
-        }
-        if (forestCount > maxForestCount) {
-            maxForestCount = forestCount;
-        }
-    }
-
-    for (let i = 0; i < tiles[0].length; i++) {
-        forestCount = 0;
-        for (let j = 0; j < tiles.length; j++) {
-            if (tiles[j][i].type === "forest") {
-                forestCount++;
-            } else {
-                if (forestCount > maxForestCount) {
-                    maxForestCount = forestCount;
-                }
-                forestCount = 0;
-            }
-        }
-        if (forestCount > maxForestCount) {
-            maxForestCount = forestCount;
-        }
-    }
-
-    if (maxForestCount > 0) {
-        points += 2 * maxForestCount;
-    }
-
-    return points;
-}
-
-function validateGazdagVaros(tiles) {
-    let points = 0;
-
-    let tileTypes = new Set();
-
-    for (let i = 0; i < tiles.length; i++) {
-        tileTypes.clear();
-        for (let j = 0; j < tiles[i].length; j++) {
-            if(tiles[i][j].type !== "plain")
-            {
-                tileTypes.add(tiles[i][j].type);
-            }
-        }
-        if (tileTypes.size >= 3) {
-            points += 3;
-        }
-    }
-
-    return points;
-}
-
-function validateOntozocsatorna(tiles) {
-    let points = 0;
-
-    for (let i = 0; i < tiles.length; i++) {
-        let farmCount = 0;
-        let waterCount = 0;
-        for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === "farm") {
-                farmCount++;
-            }
-            if (tiles[i][j].type === "water") {
-                waterCount++;
-            }
-        }
-        if (farmCount === waterCount && farmCount > 0) {
-            points += 4;
-        }
-    }
-
-    return points;
-}
-
-function validateMagusokVolgye(tiles) {
-    let points = 0;
-
-    for (let i = 0; i < tiles.length; i++) {
-        for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === "mountain") {
-                if (i > 0 && tiles[i - 1][j].type === "water") {
-                    points += 3;
-                }
-                if (i < tiles.length - 1 && tiles[i + 1][j].type === "water") {
-                    points += 3;
-                }
-                if (j > 0 && tiles[i][j - 1].type === "water") {
-                    points += 3;
-                }
-                if (j < tiles[i].length - 1 && tiles[i][j + 1].type === "water") {
-                    points += 3;
-                }
-            }
-        }
-    }
-
-    return points;
-}
-
-function validateUresTelek(tiles) {
-    let points = 0;
-
-    for (let i = 0; i < tiles.length; i++) {
-        for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === "village") {
-                if (i > 0 && tiles[i - 1][j].type === "plain") {
-                    points += 2;
-                }
-                if (i < tiles.length - 1 && tiles[i + 1][j].type === "plain") {
-                    points += 2;
-                }
-                if (j > 0 && tiles[i][j - 1].type === "plain") {
-                    points += 2;
-                }
-                if (j < tiles[i].length - 1 && tiles[i][j + 1].type === "plain") {
-                    points += 2;
-                }
-            }
-        }
-    }
-
-    return points;
-}
-
-function validateSorhaz(tiles) {
-    let points = 0;
-
-    let villageCount = 0;
-    let maxVillageCount = 0;
-
-    for (let i = 0; i < tiles.length; i++) {
-        villageCount = 0;
-        for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === "village") {
-                villageCount++;
-            } else {
-                if (villageCount > maxVillageCount) {
-                    maxVillageCount = villageCount;
-                }
-                villageCount = 0;
-            }
-        }
-        if (villageCount > maxVillageCount) {
-            maxVillageCount = villageCount;
-        }
-    }
-
-    if (maxVillageCount > 0) {
-        points += 2 * maxVillageCount;
-    }
-
-    return points;
-}
-
-function validateParatlanSilok(tiles) {
-    let points = 0;
-
-    for (let i = 0; i < tiles.length; i++) {
-        if (i % 2 === 0) {
-            continue;
-        }
-
-        let full = true;
-        for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === "plain") {
-                full = false;
-                break;
-            }
-        }
-        if (full) {
-            points += 10;
-        }
-    }
-
-    return points;
-}
-
-function validateGazdagVidek(tiles) {
-    let points = 0;
-
-    let tileTypes = new Set();
-
-    for (let i = 0; i < tiles.length; i++) {
-        tileTypes.clear();
-        for (let j = 0; j < tiles[i].length; j++) {
-            tileTypes.add(tiles[i][j].type);
-        }
-        if (tileTypes.size >= 5) {
-            points += 4;
-        }
-    }
-
-    return points;
+    ]
 }
 
 export const allQuests = rawQuests.basic.concat(rawQuests.extra);
@@ -528,7 +294,7 @@ class Element {
             shape = this.mirror(shape);
         }
         shape = this.rotate(shape);
-        let strippedShape = this.strippedStructure(shape);
+        let strippedShape = shape;
 
         this.rows = strippedShape.length;
         this.cols = strippedShape[0].length;
@@ -540,152 +306,7 @@ class Element {
     }
 }
 
-export const rawElements = [
-    {
-        time: 2,
-        type: 'water',
-        shape: [[1, 1, 1],
-            [0, 0, 0],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'village',
-        shape: [[1, 1, 1],
-            [0, 0, 0],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 1,
-        type: 'forest',
-        shape: [[1, 1, 0],
-            [0, 1, 1],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'farm',
-        shape: [[1, 1, 1],
-            [0, 0, 1],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'forest',
-        shape: [[1, 1, 1],
-            [0, 0, 1],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'village',
-        shape: [[1, 1, 1],
-            [0, 1, 0],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'farm',
-        shape: [[1, 1, 1],
-            [0, 1, 0],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 1,
-        type: 'village',
-        shape: [[1, 1, 0],
-            [1, 0, 0],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 1,
-        type: 'village',
-        shape: [[1, 1, 1],
-            [1, 1, 0],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 1,
-        type: 'farm',
-        shape: [[1, 1, 0],
-            [0, 1, 1],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 1,
-        type: 'farm',
-        shape: [[0, 1, 0],
-            [1, 1, 1],
-            [0, 1, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'water',
-        shape: [[1, 1, 1],
-            [1, 0, 0],
-            [1, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'water',
-        shape: [[1, 0, 0],
-            [1, 1, 1],
-            [1, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'forest',
-        shape: [[1, 1, 0],
-            [0, 1, 1],
-            [0, 0, 1]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'forest',
-        shape: [[1, 1, 0],
-            [0, 1, 1],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-    {
-        time: 2,
-        type: 'water',
-        shape: [[1, 1, 0],
-            [1, 1, 0],
-            [0, 0, 0]],
-        rotation: 0,
-        mirrored: false
-    },
-]
+export const rawElements = structures;
 
 export const elements = rawElements.map(e => new Element(e));
 

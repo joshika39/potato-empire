@@ -1,11 +1,12 @@
-import {mountains} from "./data.js";
+import {mountainsCoordinates, seasons, TileTypes, sum, hiddenSum} from "./data.js";
 import {
     currentSeason,
-    getCurrentSeason,
-    quests, removeElement,
+    getCurrentSeason, hiddenQuests,
+    quests,
+    removeElement,
     shuffledElements,
     updateSeason,
-    updateTimer
+    updateTimer,
 } from "./main.js";
 
 class Position {
@@ -57,7 +58,7 @@ export class Tile {
 
         this.type = newType;
         this.content.classList.add(newType);
-        if (this.type !== "plain") {
+        if (this.type !== TileTypes.Plain) {
             this.isLocked = lockTile;
         }
     }
@@ -103,7 +104,7 @@ export class Tile {
 }
 
 class Map {
-    currentType = "plain";
+    currentType = TileTypes.Plain;
     hoveredTile;
     time;
     seasonTime = 7
@@ -228,8 +229,8 @@ export class InteractiveMap extends Map {
         super(id, rows, columns);
         this.previewMap = previewMap;
 
-        for (let mountain of mountains) {
-            this.tiles[mountain[0]][mountain[1]].changeContent("mountain");
+        for (let mountain of mountainsCoordinates) {
+            this.tiles[mountain[0]][mountain[1]].changeContent(TileTypes.Mountain);
             this.tiles[mountain[0]][mountain[1]].isInPreview = false;
             this.tiles[mountain[0]][mountain[1]].isLocked = true;
         }
@@ -278,7 +279,7 @@ export class InteractiveMap extends Map {
         this.seasonTime -= shuffledElements[0].time;
 
         if (this.seasonTime <= 0) {
-            this.seasonTime = 7;
+            this.seasonTime = 7 - Math.abs(this.seasonTime);
             getCurrentSeason(true);
             updateSeason();
         }
@@ -287,15 +288,15 @@ export class InteractiveMap extends Map {
         removeElement();
         this.previewMap.putDownStructure(new Position(1, 1), false);
 
-        for (let quest of quests) {
-            quest.validateQuest(currentSeason);
-        }
-
-        for (let quest of quests) {
-            if(quest.isActive){
-                quest.validatePoints(currentSeason, this.tiles);
-            }
-        }
+        quests.forEach(q => q.validateQuest(currentSeason));
+        quests.filter(q => q.isActive).forEach(q => q.validatePoints(currentSeason, this.tiles));
+        hiddenQuests.forEach(q => q.validatePoints(currentSeason, this.tiles));
+        let sumPoints = quests.filter(q => q.isActive).map(q => q.points).reduce((a, b) => a + b, 0);
+        sumPoints += hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0);
+        getCurrentSeason().setPoints(sumPoints);
+        
+        sum.innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0)}`;
+        hiddenSum.innerText = `Rejtett küldetések: ${hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0)}`;
     }
 
     clearPreviews() {

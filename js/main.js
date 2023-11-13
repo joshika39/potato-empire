@@ -1,6 +1,6 @@
-import {elements, seasons, allQuests} from "./data.js";
+import {elements, seasons, allQuests, rawQuests} from "./data.js";
 import {InteractiveMap, PreviewMap} from "./tiles.js";
-import {Quest} from "./quest.js";
+import {HiddenQuest, Quest} from "./quest.js";
 
 const sizeX = 11;
 const sizeY = 11;
@@ -22,6 +22,7 @@ const map = new InteractiveMap("map", sizeX, sizeY, previewMap);
 const codes = ["A", "B", "C", "D"];
 
 export const quests = [];
+export const hiddenQuests = [];
 
 for (let i = 0; i < 4; i++) {
     let randomQuest = allQuests[Math.floor(Math.random() * allQuests.length)];
@@ -34,8 +35,10 @@ for (let i = 0; i < 4; i++) {
     quests.push(q);
 }
 
+rawQuests.hidden.forEach(q => hiddenQuests.push(new HiddenQuest(q)));
+
 export function updateTimer() {
-    document.getElementById("timer").innerHTML = `Hátralévő idő: ${map.seasonTime} (${map.time})`;
+    document.getElementById("timer").innerHTML = `Hátralévő idő: ${map.seasonTime}/7 (${map.time})`;
 }
 
 export function updateSeason() {

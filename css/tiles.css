@@ -1,6 +1,6 @@
 .tile {
-    width: 55px;
-    height: 55px;
+    width: 45px;
+    height: 45px;
     position: relative;
     border-radius: 5px;
     border: transparent;
@@ -14,7 +14,8 @@
 
 .tile-bg {
     z-index: -1;
-    padding: 1.5rem;
+    padding: 1rem;
+    margin: 1rem;
 }
 
 .tile.plain {
@@ -23,6 +24,10 @@
 
 .tile.mountain {
     background: #ae7744;
+}
+
+.tile.mountain .tile-bg {
+    background: url("../images/icons/mountain.svg") no-repeat center;
 }
 
 .tile.forest {
