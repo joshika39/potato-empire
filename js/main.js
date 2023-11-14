@@ -1,4 +1,4 @@
-import {elements, seasons, allQuests, rawQuests} from "./data.js";
+import {elements, seasons, rawQuests, hiddenSum, Struct} from "./data.js";
 import {InteractiveMap, PreviewMap} from "./tiles.js";
 import {HiddenQuest, Quest} from "./quest.js";
 
@@ -13,12 +13,14 @@ window.mobileAndTabletCheck = function () {
     return check;
 };
 
-export let shuffledElements = shuffleArray(elements);
-export let currentSeason = 0;
+let storedElements = localStorage.elements ? JSON.parse(localStorage.elements) : [];
+export let shuffledElements = localStorage.elements ? JSON.parse(localStorage.elements).map(e => new Struct(storedElements.find(el => el.id === e.id))) : shuffleArray(elements);
+export let currentSeason = localStorage.currentSeason ? parseInt(localStorage.currentSeason) : 0;
 
 export function getCurrentSeason(shift = false) {
     if (shift) {
         currentSeason = (currentSeason + 1) % 4;
+        localStorage.currentSeason = currentSeason;
     }
 
     return seasons[currentSeason];
@@ -27,23 +29,31 @@ export function getCurrentSeason(shift = false) {
 const previewMap = new PreviewMap("preview-map", 3, 3, false);
 const map = new InteractiveMap("map", sizeX, sizeY, previewMap);
 
-const codes = ["A", "B", "C", "D"];
+export const allQuests = rawQuests.basic.concat(rawQuests.extra);
+export const quests = localStorage.quests ? JSON.parse(localStorage.quests).map(q => new Quest(allQuests.find(aq => aq.id === q.id), q.code, q.points)) : [];
+export const hiddenQuests = localStorage.hiddenQuests ? JSON.parse(localStorage.hiddenQuests).map(q => new HiddenQuest(rawQuests.hidden.find(aq => aq.id === q.id))) : [];
 
-export const quests = [];
-export const hiddenQuests = [];
+if(quests.length === 0) {
+    const codes = ["A", "B", "C", "D"];
 
-for (let i = 0; i < 4; i++) {
-    let randomQuest = allQuests[Math.floor(Math.random() * allQuests.length)];
-    if (quests.some(q => q.id === randomQuest.id)) {
-        i--;
-        continue;
+    for (let i = 0; i < 4; i++) {
+        let randomQuest = allQuests[Math.floor(Math.random() * allQuests.length)];
+        if (quests.some(q => q.id === randomQuest.id)) {
+            i--;
+            continue;
+        }
+        let q = new Quest(randomQuest, codes[i]);
+        q.validateQuest(currentSeason);
+        quests.push(q);
     }
-    let q = new Quest(randomQuest, codes[i]);
-    q.validateQuest(currentSeason);
-    quests.push(q);
 }
 
-rawQuests.hidden.forEach(q => hiddenQuests.push(new HiddenQuest(q)));
+if(hiddenQuests.length === 0) {
+    rawQuests.hidden.forEach(q => hiddenQuests.push(new HiddenQuest(q)));
+}
+
+hiddenSum.title = "";
+hiddenQuests.forEach(q => hiddenSum.title += `${q}\n`);
 
 export function updateTimer() {
     document.getElementById("timer").innerHTML = `Hátralévő idő: ${map.seasonTime}/7 (${map.time})`;
@@ -65,6 +75,27 @@ document.getElementById("rotate").addEventListener("click", () => {
     updateElement()
 });
 
+document.addEventListener("keydown", keyDownHandler, false);
+
+function keyDownHandler(event) {
+    if (event.keyCode === 82 && event.shiftKey){
+        localStorage.clear();
+        location.reload();
+        return;
+    }
+
+    if (event.keyCode === 82 && !event.ctrlKey) {
+        event.preventDefault();
+        shuffledElements[0].changeRotation();
+        updateElement();
+    }
+
+    if (event.keyCode === 116 || event.keyCode === 84) {
+        shuffledElements[0].mirrored = !shuffledElements[0].mirrored;
+        updateElement()
+    }
+}
+
 document.getElementById("mirror").addEventListener("click", () => {
     if(shuffledElements.length === 0) {
         return;
@@ -77,7 +108,7 @@ document.getElementById("mirror").addEventListener("click", () => {
 export function updateElement(){
     map.updateActiveElement();
     previewMap.updateActiveElement()
-    localStorage.elements = shuffledElements.map(e => e.serializeJSON());
+    localStorage.elements = JSON.stringify(shuffledElements.map(e => e.serializeJSON()));
 }
 
 export function removeElement() {
@@ -92,7 +123,7 @@ export function removeElement() {
         return;
     }
 
-    localStorage.elements = shuffledElements.map(e => e.serializeJSON());
+    localStorage.elements = JSON.stringify(shuffledElements.map(e => e.serializeJSON()));
 }
 
 document.getElementById("sum").innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0)}`;

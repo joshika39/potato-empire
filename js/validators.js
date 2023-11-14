@@ -313,3 +313,22 @@ export function validateKorbekeritettHegy(tiles, quest) {
         }
     }
 }
+
+export function validateEasternGate(tiles, quest) {
+    quest.points = 0;
+    let villages = 0;
+    let farms = 0;
+    for(let i = 0; i < tiles.length; i++) {
+        if(tiles[i][tiles[i].length - 1].type === TileTypes.Village) {
+            villages++;
+        }
+        if(tiles[i][tiles[i].length - 1].type === TileTypes.Farm) {
+            farms++;
+        }
+    }
+
+    if(villages === 1 && farms === 6) {
+        quest.points += 10;
+        quest.isCompleted = true;
+    }
+}

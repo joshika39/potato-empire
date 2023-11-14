@@ -1,5 +1,5 @@
 import {
-    validateAlmosVolgy,
+    validateAlmosVolgy, validateEasternGate,
     validateErdoSzele,
     validateFasor,
     validateGazdagVaros, validateGazdagVidek,
@@ -83,7 +83,7 @@ export function setup() {
     details.append(tilePicker);
     let stripToggle = document.createElement("button");
     stripToggle.id = "strip-toggle";
-    stripToggle.innerHTML = stripEnabled ? "Üres mezők kikapcsolása" : "Üres mezők bekapcsolása";
+    stripToggle.innerHTML = !stripEnabled ? "Üres mezők kikapcsolása" : "Üres mezők bekapcsolása";
     stripToggle.addEventListener("click", (e) => {
         if(shuffledElements.length === 0) {
             return;
@@ -95,6 +95,14 @@ export function setup() {
         updateElement();
     })
     stripToggle.title = "EXPERIMENTAL: Ha ki van kapcsolva, akkor a kiválasztott elemnél le lesz vágva a teljesen üres sor és/vagy oszlop."
+    let restartButton = document.createElement("button");
+    restartButton.id = "restart";
+    restartButton.innerHTML = "Újrakezdés";
+    restartButton.addEventListener("click", () => {
+        localStorage.clear();
+        location.reload();
+    });
+    tilePicker.append(restartButton);
     tilePicker.append(stripToggle);
 }
 
@@ -103,7 +111,7 @@ setup();
 export class Season {
     points = 0;
 
-    constructor(id, name) {
+    constructor(id, name, points = 0) {
         this.id = id;
         this.name = name;
 
@@ -114,20 +122,32 @@ export class Season {
         this.content.innerHTML = `${this.name}<br>${this.points} pont`;
 
         container.append(this.content);
+
+        if(points > 0) {
+            this.setPoints(points);
+        }
     }
 
     setPoints(points) {
         this.points = points;
         this.content.innerHTML = `${this.name}<br>${this.points} pont`;
     }
+
+    serializeJSON() {
+        return {
+            id: this.id,
+            name: this.name,
+            points: this.points
+        }
+    }
 }
 
-export const seasons = [
+export const seasons = localStorage.seasons ? JSON.parse(localStorage.seasons).map(s => new Season(s.id, s.name, s.points)) : [
     new Season("spring", "Tavasz"),
     new Season("summer", "Nyár"),
     new Season("autumn", "Ősz"),
     new Season("winter", "Tél")
-]
+];
 
 export const mountainsCoordinates = [
     [2, 2],
@@ -220,14 +240,19 @@ export const rawQuests = {
             "title": "Körbekerített hegy mező",
             "description": "Ha a hegyeket 4 oldalról körbevesszük más mezővel, körbevett hegyenként 1-1 pontot kapunk.",
             "validator": validateKorbekeritettHegy
+        },
+        {
+            "id": "easten-gate",
+            "title": "Keleti kapu",
+            "description": "Pontosan egy falu és 6 farm található a pálya jobb szélén. 10 pontot kapunk érte.",
+            "validator": validateEasternGate
         }
     ]
 }
 
-export const allQuests = rawQuests.basic.concat(rawQuests.extra);
-
-class Element {
+export class Struct {
     constructor(element) {
+        this.id = element.id;
         this.rotation = element.rotation;
         this.shape = element.shape;
         this.tileType = element.type;
@@ -334,6 +359,7 @@ class Element {
 
     serializeJSON() {
         return {
+            id: this.id,
             rotation: this.rotation,
             shape: this.shape,
             type: this.tileType,
@@ -345,6 +371,6 @@ class Element {
 
 export const rawElements = structures;
 
-export const elements = rawElements.map(e => new Element(e));
+export const elements = rawElements.map(e => new Struct(e));
 
 

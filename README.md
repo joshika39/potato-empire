@@ -1,6 +1,53 @@
-Joshua Hegedus (joshika39)
+# Potato Empire
 
-YQMHWO
+### Információk
+- **Név:** Joshua Hegedus (joshika39)
+- **Neptun kód:** YQMHWO
+- **Repo:** https://github.com/joshika39/potato-empire
+
+### Használati útmutató
+
+A játék élő verzióját a [`https://potato-empire.bitof.faith/`](https://potato-empire.bitof.faith/) 
+címen érhetjük el.
+
+#### Irányítás
+
+A játékot egérrel tudjuk irányítani. Illetve vannak billnetyűkre gyorsbillentyűk is:
+- `R` - forgatás
+- `T` - tükrözés
+- `Shift + R` - Újrakezdés
+
+Van még egy `Üres mezők kikapcsolása` gomb amellyel le tudjuk vágni a felesleges üres mezőket. Így teljes írányítást
+kaphatunk a lerakható elemeknél.
+
+#### Reszponzivitás
+
+A játék **teljesen** reszponzív. A játékot bármilyen méretű kijelzőn lehet játszani. 
+
+> **Megjegyzés:** A játékot mobil illetve tablet eszközökön is lehet játszani, de itt a második kattintásra fogja lerakni
+> a játékos a kiválasztott elemet. Ez a játékmenetet nem befolyásolja, csak a kényelmetlenséget növeli.
+
+#### Extra funkciók
+
+- Ha a rejtett küldetésekre húzza az egerét, akkor megjelennek a teljesíthető rejtett küldetések.
+  - Van egy ajándék rejtetett küldetés: **`The Eastern Gate`**
+- A játék folyamatosan menti az állapotát a localStorage-ba. Így ha a játékot bezárjuk, akkor a következő
+  oldal betöltéskor folytathatjuk a játékot.
+
+### Megvalósítás részletei
+
+- Minden reprezentáció dinamikusan történik, ha hozzáadunk egy új küldetést akkor az az új betöltéskor automatikusan
+  megjelenik.
+- OOP megvalósítás
+  - A térképek egy `Map` absztrakt osztályból származnak le.    
+    - `InteractiveMap`
+    - `PreviewMap`
+  - A küldetések egy `QuestBase` absztrakt osztályból származnak le.
+    - `Quest`
+    - `HiddenQuest`
+  - Létezik még a `Tile` és `Position` osztály is, amelyek a mezők és pozíciók reprezentálására szolgálnak.
+
+### Teljesített követelmények
 
 Webprogramozás - számonkérés
 Ezt a megoldást a fent írt hallgató küldte be és készítette a Webprogramozás kurzus számonkéréséhez.

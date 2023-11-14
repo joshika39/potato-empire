@@ -146,6 +146,17 @@ class Map {
                 this.tiles.push(row);
             }
         }
+
+        if (localStorage[this.id] !== undefined) {
+            if (localStorage[this.id] !== undefined) {
+                let tempTiles = JSON.parse(localStorage[this.id]).tiles;
+                for (let i = 0; i < tempTiles.length; i++) {
+                    for (let j = 0; j < tempTiles[i].length; j++) {
+                        this.tiles[i][j].changeContent(tempTiles[i][j].type, tempTiles[i][j].isLocked);
+                    }
+                }
+            }
+        }
     }
 
     fixTileOffset(tile) {
@@ -241,14 +252,19 @@ export class PreviewMap extends Map {
 
 export class InteractiveMap extends Map {
     previousTile;
+
     constructor(id, rows, columns, previewMap) {
         super(id, rows, columns);
         this.previewMap = previewMap;
 
-        for (let mountain of mountainsCoordinates) {
-            this.tiles[mountain[0]][mountain[1]].changeContent(TileTypes.Mountain);
-            this.tiles[mountain[0]][mountain[1]].isInPreview = false;
-            this.tiles[mountain[0]][mountain[1]].isLocked = true;
+        if (localStorage[this.id] !== undefined) {
+            this.time = JSON.parse(localStorage[this.id]).time;
+            this.seasonTime = JSON.parse(localStorage[this.id]).seasonTime;
+        }
+        else{
+            for (let mountain of mountainsCoordinates) {
+                this.tiles[mountain[0]][mountain[1]].changeContent("mountain", true);
+            }
         }
 
         this.previewMap.putDownStructure(new Position(1, 1), false);
@@ -256,7 +272,7 @@ export class InteractiveMap extends Map {
     }
 
     onTileHovered(tile) {
-        if(shuffledElements.length === 0){
+        if (shuffledElements.length === 0) {
             return;
         }
 
@@ -286,7 +302,7 @@ export class InteractiveMap extends Map {
             return;
         }
 
-        if(window.mobileAndTabletCheck() && (this.previousTile === undefined || this.previousTile !== tile)){
+        if (window.mobileAndTabletCheck() && (this.previousTile === undefined || this.previousTile !== tile)) {
             this.previousTile = tile;
             return;
         }
@@ -302,10 +318,14 @@ export class InteractiveMap extends Map {
 
         quests.filter(q => q.isActive).forEach(q => q.validatePoints(currentSeason, this.tiles));
         hiddenQuests.forEach(q => q.validatePoints(currentSeason, this.tiles));
+
+        localStorage.hiddenQuests = JSON.stringify(hiddenQuests.map(q => q.serializeJSON()));
+        localStorage.quests = JSON.stringify(quests.map(q => q.serializeJSON()));
+
         let sumPoints = quests.filter(q => q.isActive).map(q => q.points).reduce((a, b) => a + b, 0);
         sumPoints += hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0);
 
-        if (this.seasonTime <= 0) {
+        if (this.seasonTime <= 0 || this.shuffledElements === 1) {
             getCurrentSeason().setPoints(sumPoints);
             sum.innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0)}`;
             hiddenSum.innerText = `Rejtett küldetések: ${hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0)}`;
@@ -313,12 +333,18 @@ export class InteractiveMap extends Map {
             this.seasonTime = 7 - Math.abs(this.seasonTime);
             getCurrentSeason(true);
             updateSeason();
+            localStorage.seasons = JSON.stringify(seasons.map(s => s.serializeJSON()));
 
             quests.forEach(q => q.validateQuest(currentSeason));
         }
 
         updateTimer();
         removeElement();
+
+        if (shuffledElements.length === 0) {
+            return;
+        }
+
         this.previewMap.putDownStructure(new Position(1, 1), false);
         requiredTime.innerText = `${shuffledElements[0].time} ⏱️`;
     }

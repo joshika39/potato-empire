@@ -1,4 +1,5 @@
 export class QuestBase {
+    isCompleted = false;
     isActive = false;
     points = 0;
 
@@ -8,7 +9,7 @@ export class QuestBase {
     }
 
     validatePoints(currentSeason, tiles) {
-        if(this.isActive){
+        if(this.isActive && !this.isCompleted){
             this.validator(tiles, this);
         }
     }
@@ -16,18 +17,34 @@ export class QuestBase {
     validateQuest(currentSeason) {
 
     }
+
+    serializeJSON() {
+        return {
+            id: this.id,
+            isCompleted: this.isCompleted,
+            isActive: this.isActive,
+            points: this.points
+        }
+    }
 }
 
 export class HiddenQuest extends QuestBase{
     constructor(questData) {
         super(questData);
         this.isActive = true;
+
+        this.title = questData.title;
+        this.description = questData.description;
+    }
+
+    toString() {
+        return `${this.title}: ${this.description}`;
     }
 }
 
 export class Quest extends QuestBase{
 
-    constructor(questData, code) {
+    constructor(questData, code, points = 0) {
         super(questData);
 
         this.title = questData.title;
@@ -66,6 +83,11 @@ export class Quest extends QuestBase{
         this.content.append(questDescription);
 
         this.container.append(this.content);
+
+        if(points > 0){
+            this.points = points;
+            this.pointsContent.innerHTML = `(${this.points} pont)`;
+        }
     }
 
     validatePoints(currentSeason, tiles) {
@@ -90,5 +112,11 @@ export class Quest extends QuestBase{
         }
 
         this.letter.innerHTML = this.isActive ? `🟢 ${this.code}` : this.code;
+    }
+
+    serializeJSON() {
+        let base = super.serializeJSON();
+        base.code = this.code;
+        return base;
     }
 }
