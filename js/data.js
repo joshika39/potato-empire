@@ -12,7 +12,6 @@ import {
     validateUresTelek
 } from "./validators.js";
 
-import structures from './structures.json' assert { type: 'json' };
 import {shuffledElements, updateElement} from "./main.js";
 
 export let stripEnabled = localStorage.stripEnabled === "true" || false;
@@ -85,7 +84,7 @@ export function setup() {
     stripToggle.id = "strip-toggle";
     stripToggle.innerHTML = !stripEnabled ? "Üres mezők kikapcsolása" : "Üres mezők bekapcsolása";
     stripToggle.addEventListener("click", (e) => {
-        if(shuffledElements.length === 0) {
+        if (shuffledElements.length === 0) {
             return;
         }
 
@@ -123,7 +122,7 @@ export class Season {
 
         container.append(this.content);
 
-        if(points > 0) {
+        if (points > 0) {
             this.setPoints(points);
         }
     }
@@ -369,7 +368,392 @@ export class Struct {
     }
 }
 
-export const rawElements = structures;
+export const rawElements = [
+    {
+        "id": 1,
+        "time": 2,
+        "type": "water",
+        "shape": [
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                0,
+                0,
+                0
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 2,
+        "time": 2,
+        "type": "village",
+        "shape": [
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                0,
+                0,
+                0
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 3,
+        "time": 1,
+        "type": "forest",
+        "shape": [
+            [
+                1,
+                1,
+                0
+            ],
+            [
+                0,
+                1,
+                1
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 4,
+        "time": 2,
+        "type": "farm",
+        "shape": [
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                0,
+                0,
+                1
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 5,
+        "time": 2,
+        "type": "forest",
+        "shape": [
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                0,
+                0,
+                1
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 6,
+        "time": 2,
+        "type": "village",
+        "shape": [
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                0,
+                1,
+                0
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 7,
+        "time": 2,
+        "type": "farm",
+        "shape": [
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                0,
+                1,
+                0
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 8,
+        "time": 1,
+        "type": "village",
+        "shape": [
+            [
+                1,
+                1,
+                0
+            ],
+            [
+                1,
+                0,
+                0
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 9,
+        "time": 1,
+        "type": "village",
+        "shape": [
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                1,
+                1,
+                0
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 10,
+        "time": 1,
+        "type": "farm",
+        "shape": [
+            [
+                1,
+                1,
+                0
+            ],
+            [
+                0,
+                1,
+                1
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 11,
+        "time": 1,
+        "type": "farm",
+        "shape": [
+            [
+                0,
+                1,
+                0
+            ],
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                0,
+                1,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 12,
+        "time": 2,
+        "type": "water",
+        "shape": [
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                1,
+                0,
+                0
+            ],
+            [
+                1,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 13,
+        "time": 2,
+        "type": "water",
+        "shape": [
+            [
+                1,
+                0,
+                0
+            ],
+            [
+                1,
+                1,
+                1
+            ],
+            [
+                1,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 14,
+        "time": 2,
+        "type": "forest",
+        "shape": [
+            [
+                1,
+                1,
+                0
+            ],
+            [
+                0,
+                1,
+                1
+            ],
+            [
+                0,
+                0,
+                1
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 15,
+        "time": 2,
+        "type": "forest",
+        "shape": [
+            [
+                1,
+                1,
+                0
+            ],
+            [
+                0,
+                1,
+                1
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    },
+    {
+        "id": 16,
+        "time": 2,
+        "type": "water",
+        "shape": [
+            [
+                1,
+                1,
+                0
+            ],
+            [
+                1,
+                1,
+                0
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ],
+        "rotation": 0,
+        "mirrored": false
+    }
+];
 
 export const elements = rawElements.map(e => new Struct(e));
 

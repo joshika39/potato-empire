@@ -15,6 +15,12 @@ window.mobileAndTabletCheck = function () {
 
 let storedElements = localStorage.elements ? JSON.parse(localStorage.elements) : [];
 export let shuffledElements = localStorage.elements ? JSON.parse(localStorage.elements).map(e => new Struct(storedElements.find(el => el.id === e.id))) : shuffleArray(elements);
+
+export function reShuffleElements() {
+    shuffledElements = shuffleArray(elements);
+    localStorage.elements = JSON.stringify(shuffledElements.map(e => e.serializeJSON()));
+}
+
 export let currentSeason = localStorage.currentSeason ? parseInt(localStorage.currentSeason) : 0;
 
 export function getCurrentSeason(shift = false) {
@@ -124,6 +130,14 @@ export function removeElement() {
     }
 
     localStorage.elements = JSON.stringify(shuffledElements.map(e => e.serializeJSON()));
+}
+
+export function endGame() {
+    document.getElementById("rotate").disabled = true;
+    document.getElementById("mirror").disabled = true;
+    document.getElementById("strip-toggle").disabled = true;
+    shuffledElements = [];
+    alert("Vége a játéknak!");
 }
 
 document.getElementById("sum").innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0)}`;

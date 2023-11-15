@@ -1,9 +1,9 @@
 import {mountainsCoordinates, seasons, TileTypes, sum, hiddenSum, requiredTime, stripEnabled} from "./data.js";
 import {
-    currentSeason,
+    currentSeason, endGame,
     getCurrentSeason, hiddenQuests,
     quests,
-    removeElement,
+    removeElement, reShuffleElements,
     shuffledElements,
     updateSeason,
     updateTimer
@@ -112,6 +112,7 @@ export class Tile {
 }
 
 class Map {
+    hasGameEnded = false;
     hoveredTile;
     time;
     seasonTime = 7
@@ -188,7 +189,7 @@ class Map {
     }
 
     putDownStructure(position, isPreview = true, lockTile = false) {
-        if (shuffledElements.length === 0) {
+        if (shuffledElements.length === 0 || this.hasGameEnded) {
             return false;
         }
 
@@ -298,7 +299,7 @@ export class InteractiveMap extends Map {
     onTileClicked(tile) {
         tile = this.fixTileOffset(tile);
 
-        if (tile === undefined || shuffledElements.length === 0) {
+        if (tile === undefined || this.hasGameEnded) {
             return;
         }
 
@@ -313,8 +314,15 @@ export class InteractiveMap extends Map {
         this.previewMap.clearTiles();
         this.clearPreviews();
 
+
         this.time -= shuffledElements[0].time;
         this.seasonTime -= shuffledElements[0].time;
+
+        if(this.time < 0){
+            this.time = 0;
+            this.hasGameEnded = true;
+            this.previewMap.clearTiles();
+        }
 
         quests.filter(q => q.isActive).forEach(q => q.validatePoints(currentSeason, this.tiles));
         hiddenQuests.forEach(q => q.validatePoints(currentSeason, this.tiles));
@@ -336,6 +344,13 @@ export class InteractiveMap extends Map {
             localStorage.seasons = JSON.stringify(seasons.map(s => s.serializeJSON()));
 
             quests.forEach(q => q.validateQuest(currentSeason));
+
+            if(this.hasGameEnded){
+                endGame();
+            }
+            else{
+                reShuffleElements();
+            }
         }
 
         updateTimer();
