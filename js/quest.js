@@ -29,9 +29,10 @@ export class QuestBase {
 }
 
 export class HiddenQuest extends QuestBase{
-    constructor(questData) {
+    constructor(questData, points = 0) {
         super(questData);
         this.isActive = true;
+        this.points = points;
 
         this.title = questData.title;
         this.description = questData.description;

@@ -331,13 +331,15 @@ export class InteractiveMap extends Map {
         localStorage.quests = JSON.stringify(quests.map(q => q.serializeJSON()));
 
         let sumPoints = quests.filter(q => q.isActive).map(q => q.points).reduce((a, b) => a + b, 0);
-        sumPoints += hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0);
+        getCurrentSeason().setPoints(sumPoints);
+        let hiddenPoints = hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0);
+        sum.innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0) + hiddenPoints}`;
+        hiddenSum.innerText = `Rejtett küldetések: ${hiddenPoints}`;
+
+        hiddenSum.title = "A rejtett küldetések évszakon kívül érvényesülnek, mert bármikor el lehet őket rontani!\n\nKüldetések:\n";
+        hiddenQuests.forEach(q => hiddenSum.title += ` - ${q}\n\t - Szerzett: ${q.points}\n`);
 
         if (this.seasonTime <= 0 || this.shuffledElements === 1) {
-            getCurrentSeason().setPoints(sumPoints);
-            sum.innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0)}`;
-            hiddenSum.innerText = `Rejtett küldetések: ${hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0)}`;
-
             this.seasonTime = 7 - Math.abs(this.seasonTime);
             getCurrentSeason(true);
             updateSeason();

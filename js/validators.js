@@ -159,14 +159,16 @@ export function validateOntozocsatorna(tiles, quest) {
     for (let i = 0; i < tiles.length; i++) {
         let farmCount = 0;
         let waterCount = 0;
+
         for (let j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j].type === TileTypes.Farm) {
+            if (tiles[j][i].type === TileTypes.Farm) {
                 farmCount++;
             }
-            if (tiles[i][j].type === TileTypes.Water) {
+            if (tiles[j][i].type === TileTypes.Water) {
                 waterCount++;
             }
         }
+
         if (farmCount === waterCount && farmCount > 0) {
             quest.points += 4;
         }

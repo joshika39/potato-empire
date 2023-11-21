@@ -37,7 +37,7 @@ const map = new InteractiveMap("map", sizeX, sizeY, previewMap);
 
 export const allQuests = rawQuests.basic.concat(rawQuests.extra);
 export const quests = localStorage.quests ? JSON.parse(localStorage.quests).map(q => new Quest(allQuests.find(aq => aq.id === q.id), q.code, q.points)) : [];
-export const hiddenQuests = localStorage.hiddenQuests ? JSON.parse(localStorage.hiddenQuests).map(q => new HiddenQuest(rawQuests.hidden.find(aq => aq.id === q.id))) : [];
+export const hiddenQuests = localStorage.hiddenQuests ? JSON.parse(localStorage.hiddenQuests).map(q => new HiddenQuest(rawQuests.hidden.find(aq => aq.id === q.id), q.points)) : [];
 
 if(quests.length === 0) {
     const codes = ["A", "B", "C", "D"];
@@ -58,8 +58,8 @@ if(hiddenQuests.length === 0) {
     rawQuests.hidden.forEach(q => hiddenQuests.push(new HiddenQuest(q)));
 }
 
-hiddenSum.title = "";
-hiddenQuests.forEach(q => hiddenSum.title += `${q}\n`);
+hiddenSum.title = "A rejtett küldetések évszakon kívül érvényesülnek, mert bármikor el lehet őket rontani!\n\nKüldetések:\n";
+hiddenQuests.forEach(q => hiddenSum.title += ` - ${q}\n\t - Szerzett: ${q.points}\n`);
 
 export function updateTimer() {
     document.getElementById("timer").innerHTML = `Hátralévő idő: ${map.seasonTime}/7 (${map.time})`;
@@ -140,8 +140,10 @@ export function endGame() {
     alert("Vége a játéknak!");
 }
 
-document.getElementById("sum").innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0)}`;
-document.getElementById("hidden-sum").innerText = `Rejtett küldetések: ${hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0)}`;
+let hiddenPoints = hiddenQuests.map(q => q.points).reduce((a, b) => a + b, 0);
+
+document.getElementById("sum").innerText = `Összesen: ${seasons.map(s => s.points).reduce((a, b) => a + b, 0) + hiddenPoints}`;
+document.getElementById("hidden-sum").innerText = `Rejtett küldetések: ${hiddenPoints}`;
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
