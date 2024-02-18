@@ -4,6 +4,6 @@ name: potato-empire
 
 services:
   website:
-    image: potato-empire:latest
+    image: ghcr.io/joshika39/potato-empire:42871e586b1280fd8fa1a198b104eb4c6f26e3f8
     ports:
       - '8881:80'
